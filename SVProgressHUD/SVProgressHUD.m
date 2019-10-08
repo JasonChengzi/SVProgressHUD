@@ -259,6 +259,23 @@ static const CGFloat SVProgressHUDLabelSpacing = 8.0f;
 
 
 #pragma mark - Show, then automatically dismiss methods
++ (void)showMessageWithStatus:(NSString *)status {
+    [self showImage:[UIImage imageNamed:@"NO NAME IMAGE"] status:status];
+#if TARGET_OS_IOS && __IPHONE_OS_VERSION_MAX_ALLOWED >= 100000
+    if (@available(iOS 10.0, *)) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[self sharedView].hapticGenerator notificationOccurred:UINotificationFeedbackTypeWarning];
+        });
+    }
+#endif
+}
+
++ (void)showMessageWithStatus:(NSString *)status maskType:(SVProgressHUDMaskType)maskType {
+    SVProgressHUDMaskType existingMaskType = [self sharedView].defaultMaskType;
+    [self setDefaultMaskType:maskType];
+    [self showMessageWithStatus:status];
+    [self setDefaultMaskType:existingMaskType];
+}
 
 + (void)showInfoWithStatus:(NSString*)status {
     [self showImage:[self sharedView].infoImage status:status];
